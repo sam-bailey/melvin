@@ -1,0 +1,5 @@
+FROM jupyter/scipy-notebook
+
+WORKDIR /usr/src/app
+COPY --chown=${NB_UID}:${NB_GID} . .
+RUN pip install -e .
