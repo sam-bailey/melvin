@@ -11,11 +11,19 @@ from setuptools import setup, find_packages
 
 requirements = [
     "numpy",
+    "scipy",
+    "matplotlib",
     "jax",
-    "jaxlib"
+    "jaxlib",
+    "tqdm",
+    "pandas"
 ]
 
-requirements_dev = []
+requirements_dev = [
+    "jupyter",
+    "black",
+    "isort"
+]
 
 setup(
     name="melvin",
