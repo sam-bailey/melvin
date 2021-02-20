@@ -1,26 +1,33 @@
 from __future__ import annotations
 
+import copy
+from typing import Callable, Dict
+
 import jax
 import jax.numpy as jnp
-from jax.interpreters.xla import _DeviceArray as DeviceArray
-from jax.experimental.optimizers import adam, Optimizer
-from typing import Callable, Dict
-from tqdm import trange
 import matplotlib.pylab as plt
-import copy
+from jax.experimental.optimizers import Optimizer, adam
+from jax.interpreters.xla import _DeviceArray as DeviceArray
 from matplotlib.axes._subplots import Axes
+from tqdm import trange
 
 LikelihoodFnType = Callable[[DeviceArray, DeviceArray], DeviceArray]
 
 
 class MaximumLikelihoodModels(object):
-    def __init__(self, name: str, log_likelihood_fn: LikelihoodFnType, x0: DeviceArray, optimizer: Optimizer = adam(step_size=0.1)):
+    def __init__(
+        self,
+        name: str,
+        log_likelihood_fn: LikelihoodFnType,
+        x0: DeviceArray,
+        optimizer: Optimizer = adam(step_size=0.1),
+    ):
         self.optimizer = optimizer
         self.log_likelihood_fn = {name: jax.jit(log_likelihood_fn)}
 
         @jax.jit
         def _loss_fn(x: DeviceArray, data: DeviceArray) -> DeviceArray:
-            return -1*log_likelihood_fn(x=x, data=data)
+            return -1 * log_likelihood_fn(x=x, data=data)
 
         self.loss_fn = {name: log_likelihood_fn}
         self.value_and_grad_fn = {name: jax.value_and_grad(_loss_fn)}
@@ -29,8 +36,14 @@ class MaximumLikelihoodModels(object):
         self.x = {name: x0}
         self.loss_history = {name: []}
         self.model_names = [name]
-    
-    def _fit_one_model(self, model_name: str, n_steps: int, data: DeviceArray, reset_history: bool = False) -> None:
+
+    def _fit_one_model(
+        self,
+        model_name: str,
+        n_steps: int,
+        data: DeviceArray,
+        reset_history: bool = False,
+    ) -> None:
         if reset_history:
             self.loss_history[model_name] = []
 
@@ -42,7 +55,7 @@ class MaximumLikelihoodModels(object):
             value, grads = self.value_and_grad_fn[model_name](x_i, data)
             self.loss_history[model_name].append(value)
             opt_state = opt_update(step, grads, opt_state)
-        
+
         self.x[model_name] = get_params(opt_state)
 
     def fit(self, n_steps: int, data: DeviceArray, reset_history: bool = False) -> None:
@@ -71,20 +84,14 @@ class MaximumLikelihoodModels(object):
             name: jnp.linalg.inv(self.hessian_fn[name](self.x[name], self.train_data))
             for name in self.model_names
         }
-    
+
     @property
     def var(self) -> Dict[str, DeviceArray]:
-        return {
-            name: jnp.diag(cov)
-            for name, cov in self.cov.items()
-        }
+        return {name: jnp.diag(cov) for name, cov in self.cov.items()}
 
     @property
     def sig(self) -> Dict[str, DeviceArray]:
-        return {
-            name: jnp.sqrt(var)
-            for name, var in self.var.items()
-        }
+        return {name: jnp.sqrt(var) for name, var in self.var.items()}
 
     def x_rvs(self, shape):
         pass

@@ -7,23 +7,11 @@
 # from the C file.
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
-requirements = [
-    "numpy",
-    "scipy",
-    "matplotlib",
-    "jax",
-    "jaxlib",
-    "tqdm",
-    "pandas"
-]
+requirements = ["numpy", "scipy", "matplotlib", "jax", "jaxlib", "tqdm", "pandas"]
 
-requirements_dev = [
-    "jupyter",
-    "black",
-    "isort"
-]
+requirements_dev = ["jupyter", "pre-commit"]
 
 setup(
     name="melvin",

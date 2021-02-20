@@ -1,23 +1,24 @@
 from __future__ import annotations
 
+from typing import Any, Callable, Dict
+
 import jax
-from jax.interpreters.xla import _DeviceArray as DeviceArray
-from jax.experimental.optimizers import adam, Optimizer
-from typing import Callable, Dict, Any
-from tqdm import trange
 import matplotlib.pylab as plt
+from jax.experimental.optimizers import Optimizer, adam
+from jax.interpreters.xla import _DeviceArray as DeviceArray
 from matplotlib.axes._subplots import Axes
+from tqdm import trange
 
 
 class MinimizationProblem:
     def __init__(
         self,
-        name: str, 
-        objective_fn: Callable[[DeviceArray, Any], DeviceArray], 
-        initial_params: DeviceArray, 
+        name: str,
+        objective_fn: Callable[[DeviceArray, Any], DeviceArray],
+        initial_params: DeviceArray,
         optimizer: Optimizer = adam,
-        optimizer_kwargs: Dict[str, Any] = {"step_size": 0.1}
-        ):
+        optimizer_kwargs: Dict[str, Any] = {"step_size": 0.1},
+    ):
 
         self.update_optimizer(optimizer, **optimizer_kwargs)
         self.name = name
@@ -27,12 +28,14 @@ class MinimizationProblem:
         self.params = initial_params
         self.reset_history()
 
-    def update_optimizer(self, new_optimizer: Optimizer, **new_optimizer_kwargs: Any) -> None:
+    def update_optimizer(
+        self, new_optimizer: Optimizer, **new_optimizer_kwargs: Any
+    ) -> None:
         self.optimizer = new_optimizer(**new_optimizer_kwargs)
 
     def reset_history(self):
         self.history = []
-    
+
     def fit(self, n_steps: int, **objective_fn_kwargs: Any) -> None:
         opt_init, opt_update, get_params = self.optimizer
         opt_state = opt_init(self.params)
@@ -42,7 +45,7 @@ class MinimizationProblem:
             value, grads = self.value_and_grad_fn(x_i, **objective_fn_kwargs)
             self.history.append(value)
             opt_state = opt_update(step, grads, opt_state)
-        
+
         self.params = get_params(opt_state)
 
     def plot_history(self, ax: Axes = None) -> Axes:
