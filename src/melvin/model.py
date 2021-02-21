@@ -17,7 +17,7 @@ class BasicModel(MinimizationProblem):
         self,
         name: str,
         model_fn: Callable[[DeviceArray, DeviceArray], DeviceArray],
-        loss_fn: Callable[[DeviceArray, DeviceArray], DeviceArray],
+        loss_fn: Callable[[DeviceArray, DeviceArray, DeviceArray], DeviceArray],
         initial_params: DeviceArray,
         optimizer: Optimizer = adam,
         optimizer_kwargs: Dict[str, Any] = {"step_size": 0.1},
@@ -48,6 +48,8 @@ class BasicModel(MinimizationProblem):
         self.loss_fn = jax.jit(loss_fn)
 
     def fit(self, n_steps: int, X: DeviceArray, y: DeviceArray) -> None:
+        self.X_train = X
+        self.y_train = y
         super().fit(n_steps=n_steps, X=X, y=y)
 
     def predict(self, X: DeviceArray) -> DeviceArray:
@@ -55,3 +57,7 @@ class BasicModel(MinimizationProblem):
 
     def evaluate(self, X: DeviceArray, y: DeviceArray) -> DeviceArray:
         return self.objective_fn(self.params, X=X, y=y)
+
+    @property
+    def train_loss(self):
+        return self.history[-1]
