@@ -17,25 +17,31 @@ class MaximumLikelihoodModel(BasicModel):
     def __init__(
         self,
         name: str,
-        model_fn: Callable[[DeviceArray, DeviceArray], DeviceArray],
+        model_fn: Callable[[DeviceArray, DeviceArray, DeviceArray], DeviceArray],
         log_likelihood_fn: Callable[
-            [DeviceArray, DeviceArray, DeviceArray], DeviceArray
+            [DeviceArray, DeviceArray, DeviceArray, DeviceArray], DeviceArray
         ],
         initial_params: DeviceArray,
+        fixed_params: DeviceArray,
         optimizer: Optimizer = adam,
         optimizer_kwargs: Dict[str, Any] = {"step_size": 0.1},
     ):
-        self.log_likelihood_fn = jax.jit(log_likelihood_fn)
+        self.log_likelihood_fn = log_likelihood_fn
 
-        @jax.jit
-        def loss_fn(y, y_pred, params):
-            return -1 * log_likelihood_fn(y, y_pred, params)
+        def loss_fn(
+            y: DeviceArray,
+            y_pred: DeviceArray,
+            params: DeviceArray,
+            fixed_params: DeviceArray,
+        ) -> DeviceArray:
+            return -1 * log_likelihood_fn(y, y_pred, params, fixed_params)
 
         super().__init__(
             name=name,
             model_fn=model_fn,
             loss_fn=loss_fn,
             initial_params=initial_params,
+            fixed_params=fixed_params,
             optimizer=optimizer,
             optimizer_kwargs=optimizer_kwargs,
         )

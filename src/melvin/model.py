@@ -16,9 +16,12 @@ class BasicModel(MinimizationProblem):
     def __init__(
         self,
         name: str,
-        model_fn: Callable[[DeviceArray, DeviceArray], DeviceArray],
-        loss_fn: Callable[[DeviceArray, DeviceArray, DeviceArray], DeviceArray],
+        model_fn: Callable[[DeviceArray, DeviceArray, DeviceArray], DeviceArray],
+        loss_fn: Callable[
+            [DeviceArray, DeviceArray, DeviceArray, DeviceArray], DeviceArray
+        ],
         initial_params: DeviceArray,
+        fixed_params: DeviceArray,
         optimizer: Optimizer = adam,
         optimizer_kwargs: Dict[str, Any] = {"step_size": 0.1},
     ):
@@ -29,23 +32,26 @@ class BasicModel(MinimizationProblem):
         and the second is the data. If using batched data it is one batch of data.
         """
 
-        @jax.jit
         def objective_fn(
-            params: DeviceArray, X: DeviceArray, y: DeviceArray
+            params: DeviceArray,
+            fixed_params: DeviceArray,
+            X: DeviceArray,
+            y: DeviceArray,
         ) -> DeviceArray:
-            y_pred = model_fn(params, X)
-            return loss_fn(y, y_pred, params)
+            y_pred = model_fn(params, X, fixed_params)
+            return loss_fn(y, y_pred, params, fixed_params)
 
         super().__init__(
             name=name,
             objective_fn=objective_fn,
             initial_params=initial_params,
+            fixed_params=fixed_params,
             optimizer=optimizer,
             optimizer_kwargs=optimizer_kwargs,
         )
 
-        self.model_fn = jax.jit(model_fn)
-        self.loss_fn = jax.jit(loss_fn)
+        self.model_fn = model_fn
+        self.loss_fn = loss_fn
 
     def fit(self, n_steps: int, X: DeviceArray, y: DeviceArray) -> None:
         self.X_train = X
@@ -53,10 +59,10 @@ class BasicModel(MinimizationProblem):
         super().fit(n_steps=n_steps, X=X, y=y)
 
     def predict(self, X: DeviceArray) -> DeviceArray:
-        return self.model_fn(self.params, X)
+        return self.model_fn(self.params, X, self.fixed_params)
 
     def evaluate(self, X: DeviceArray, y: DeviceArray) -> DeviceArray:
-        return self.objective_fn(self.params, X=X, y=y)
+        return self.objective_fn(self.params, self.fixed_params, X=X, y=y)
 
     @property
     def train_loss(self):

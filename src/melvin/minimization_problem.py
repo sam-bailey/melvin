@@ -14,18 +14,20 @@ class MinimizationProblem:
     def __init__(
         self,
         name: str,
-        objective_fn: Callable[[DeviceArray, Any], DeviceArray],
+        objective_fn: Callable[[DeviceArray, DeviceArray, ...], DeviceArray],
         initial_params: DeviceArray,
+        fixed_params: DeviceArray,
         optimizer: Optimizer = adam,
         optimizer_kwargs: Dict[str, Any] = {"step_size": 0.1},
     ):
 
         self.update_optimizer(optimizer, **optimizer_kwargs)
         self.name = name
-        self.objective_fn = jax.jit(objective_fn)
+        self.objective_fn = objective_fn
         self.value_and_grad_fn = jax.value_and_grad(self.objective_fn)
         self.hessian_fn = jax.jacfwd(jax.jacrev(self.objective_fn))
         self.params = initial_params
+        self.fixed_params = fixed_params
         self.reset_history()
 
     def update_optimizer(
@@ -42,7 +44,9 @@ class MinimizationProblem:
 
         for step in trange(n_steps, desc=self.name):
             x_i = get_params(opt_state)
-            value, grads = self.value_and_grad_fn(x_i, **objective_fn_kwargs)
+            value, grads = self.value_and_grad_fn(
+                x_i, self.fixed_params, **objective_fn_kwargs
+            )
             self.history.append(value)
             opt_state = opt_update(step, grads, opt_state)
 
@@ -63,4 +67,4 @@ class MinimizationProblem:
         return ax
 
     def objective_value(self, **objective_fn_kwargs: Any):
-        return self.objective_fn(self.params, **objective_fn_kwargs)
+        return self.objective_fn(self.params, self.fixed_params, **objective_fn_kwargs)
