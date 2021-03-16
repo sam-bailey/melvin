@@ -14,7 +14,7 @@ class MinimizationProblem:
     def __init__(
         self,
         name: str,
-        objective_fn: Callable[[DeviceArray, DeviceArray, ...], DeviceArray],
+        objective_fn: Callable[[DeviceArray, DeviceArray], DeviceArray],
         initial_params: DeviceArray,
         fixed_params: DeviceArray,
         optimizer: Optimizer = adam,
