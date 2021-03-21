@@ -72,7 +72,7 @@ class LaplaceApproximation:
         self,
         name: str,
         initial_params: DeviceArray,
-        fixed_params: DeviceArray,
+        fixed_params: Optional[DeviceArray] = None,
         minimize_method: str = "BFGS",
         minimize_kwargs: Dict[str, Any] = {},
         use_jax_minimize: bool = True,
@@ -118,6 +118,8 @@ class LaplaceApproximation:
                 if upp is not None:
                     params_line += f"\t [Upper Bound = {upp}]"
                 output_lst.append(params_line)
+
+            output_lst.append(f"Log Posterior Prob = {self.max_posterior_log_prob}")
 
         return "\n".join(output_lst)
 
@@ -239,7 +241,7 @@ class LaplaceApproximation:
         self._raw_params_cov = jnp.linalg.inv(objective_hess(self._raw_params, X, y))
         self._raw_params_sig = jnp.sqrt(jnp.diag(self._raw_params_cov))
 
-    def params_rvs(self, prng_key: DeviceArray, n_samples: int) -> DeviceArray:
+    def sample_params(self, prng_key: DeviceArray, n_samples: int) -> DeviceArray:
         raw_params_rvs = random.multivariate_normal(
             key=prng_key,
             mean=self._raw_params,
@@ -248,6 +250,34 @@ class LaplaceApproximation:
         )
         vec_transform = jax.vmap(self._transform_params)
         return vec_transform(raw_params_rvs)
+
+    def sample_params_map(
+        self,
+        prng_key: DeviceArray,
+        n_samples: int,
+        func: Callable[[DeviceArray, Any], DeviceArray],
+        args: Tuple,
+    ) -> DeviceArray:
+        params_rvs = self.sample_params(prng_key=prng_key, n_samples=n_samples)
+
+        n_args = len(args)
+        func_map = jax.vmap(
+            func, (0,) + (None,) * n_args
+        )  # Map over the first dimension only
+
+        return func_map(params_rvs, *args)
+
+    def predict(self, X: DeviceArray) -> DeviceArray:
+        return self.model(params=self.params, X=X)
+
+    def sample_predict(
+        self, X: DeviceArray, prng_key: DeviceArray, n_samples: int
+    ) -> DeviceArray:
+        params_rvs = self.sample_params(prng_key=prng_key, n_samples=n_samples)
+
+        model_func_map = jax.vmap(self.model, (0, None))  # Map over the params, not X
+
+        return model_func_map(params_rvs, X)
 
     @property
     def max_posterior_log_prob(self) -> float:
