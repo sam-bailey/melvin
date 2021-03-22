@@ -241,15 +241,52 @@ class LaplaceApproximation:
         self._raw_params_cov = jnp.linalg.inv(objective_hess(self._raw_params, X, y))
         self._raw_params_sig = jnp.sqrt(jnp.diag(self._raw_params_cov))
 
-    def sample_params(self, prng_key: DeviceArray, n_samples: int) -> DeviceArray:
+    def _laplace_logpdf(self, params: DeviceArray) -> DeviceArray:
+        _inverse_transform_params_log = jax.jacfwd(self._inverse_transform_params)
+        raw2params_grad_log = jnp.log(_inverse_transform_params_log(params))
+
+        raw_logpdf = jax.scipy.stats.multivariate_normal.logpdf(
+            x=self._inverse_transform_params(params),
+            mean=self._raw_params,
+            cov=self._raw_params_cov,
+        )
+        return raw_logpdf + raw2params_grad_log
+
+    def sample_params(
+        self,
+        prng_key: DeviceArray,
+        n_samples: int,
+        use_importance_sampling: bool = False,
+    ) -> DeviceArray:
+        prng_key_1, prng_key_2 = random.split(prng_key)
+
         raw_params_rvs = random.multivariate_normal(
-            key=prng_key,
+            key=prng_key_1,
             mean=self._raw_params,
             cov=self._raw_params_cov,
             shape=(n_samples,),
         )
         vec_transform = jax.vmap(self._transform_params)
-        return vec_transform(raw_params_rvs)
+        params = vec_transform(raw_params_rvs)
+
+        if use_importance_sampling:
+            model_vmap = jax.vmap(self.model, (0, None))
+            posterior_log_prob_vmap = jax.vmap(self.posterior_log_prob, (0, None, None))
+            laplace_logpdf_vec = jax.vmap(self._laplace_logpdf)
+
+            y_pred = model_vmap(params, self._X_fit)
+            true_log_prob = posterior_log_prob_vmap(params, self._y_fit, y_pred)
+
+            weights = jnp.exp(
+                true_log_prob.reshape(-1) - laplace_logpdf_vec(params).reshape(-1)
+            )
+
+            idx = jnp.arange(len(weights))
+            rand_idx = random.choice(key=prng_key_2, a=idx, shape=idx.shape, p=weights)
+
+            return params[rand_idx, :]
+        else:
+            return params
 
     def sample_params_map(
         self,
