@@ -7,66 +7,14 @@ from warnings import warn
 import jax
 import jax.numpy as jnp
 import matplotlib.pylab as plt
-from jax import grad, hessian, jit, random
-from jax._src.scipy.optimize.minimize import OptimizeResults as OptimizeResultsJax
-from jax.interpreters.xla import Device
+from jax import jit, random
+from jax.api import jacfwd
 from jax.interpreters.xla import _DeviceArray as DeviceArray
-from jax.scipy.optimize import minimize as minimize_jax
 from scipy.optimize import minimize
 from scipy.optimize.optimize import OptimizeResult
 from scipy.stats import gaussian_kde
 
-OptimizeResultType = Union[OptimizeResult, OptimizeResultsJax]
-
-
-def _greater_than(x: DeviceArray, low: DeviceArray) -> DeviceArray:
-    return jnp.exp(x) + low
-
-
-def _greater_than_inv(x: DeviceArray, low: DeviceArray) -> DeviceArray:
-    return jnp.log(x - low)
-
-
-def _less_than(x: DeviceArray, upp: DeviceArray) -> DeviceArray:
-    return upp - jnp.exp(x)
-
-
-def _less_than_inv(x: DeviceArray, upp: DeviceArray) -> DeviceArray:
-    return jnp.log(upp - x)
-
-
-def _between(x: DeviceArray, low: DeviceArray, upp: DeviceArray) -> DeviceArray:
-    return 1.0 / (1.0 + jnp.exp(-x)) * (upp - low) + low
-
-
-def _between_inv(x: DeviceArray, low: DeviceArray, upp: DeviceArray) -> DeviceArray:
-    return (jnp.log(x / (1.0 - x)) - low) / (upp - low)
-
-
-def _transform(
-    x: DeviceArray, low: Optional[DeviceArray], upp: Optional[DeviceArray]
-) -> DeviceArray:
-    if (low is not None) & (upp is not None):
-        return _between(x, low, upp)
-    elif low is not None:
-        return _greater_than(x, low)
-    elif upp is not None:
-        return _less_than(x, upp)
-    else:
-        return x
-
-
-def _transform_inv(
-    x: DeviceArray, low: Optional[DeviceArray], upp: Optional[DeviceArray]
-) -> DeviceArray:
-    if (low is not None) & (upp is not None):
-        return _between_inv(x, low, upp)
-    elif low is not None:
-        return _greater_than_inv(x, low)
-    elif upp is not None:
-        return _less_than_inv(x, upp)
-    else:
-        return x
+from .model_parameters import ModelParameters
 
 
 def sample_entropy_estimate(x: DeviceArray) -> DeviceArray:
@@ -89,8 +37,11 @@ def sample_entropy_estimate(x: DeviceArray) -> DeviceArray:
 
 
 class LaplaceApproximation:
-    jax_minimize_methods = ["BFGS"]
-    sample_methods = ["laplace", "gaussian_importance"]  # Add t-distribution importance
+    _sample_methods = [
+        "laplace",
+        "gaussian_importance",
+    ]  # Add t-distribution importance
+    _default_minimize_kwargs = {"method": "BFGS"}
     param_bounds: Optional[List[Tuple[float]]] = None
 
     def __init__(
@@ -100,9 +51,7 @@ class LaplaceApproximation:
         X: DeviceArray = jnp.array([]),
         y: DeviceArray = jnp.array([]),
         fixed_params: DeviceArray = jnp.array([]),
-        minimize_method: str = "BFGS",
         minimize_kwargs: Dict[str, Any] = {},
-        use_jax_minimize: bool = True,
     ):
         self.name = name
 
@@ -110,22 +59,12 @@ class LaplaceApproximation:
         self._y = y
 
         self.fixed_params = fixed_params
-        self.params = initial_params
+        self.params = ModelParameters(x=initial_params, bounds=self.param_bounds)
 
-        self._prep_minimizer(use_jax_minimize, minimize_method, minimize_kwargs)
+        self._minimize_kwargs = self._default_minimize_kwargs
+        self._minimize_kwargs.update(minimize_kwargs)
+
         self._fit()
-
-    def _prep_minimizer(
-        self,
-        use_jax_minimize: bool,
-        minimize_method: str,
-        minimize_kwargs: Dict[str, Any],
-    ) -> None:
-        self._use_jax_minimize = (
-            minimize_method in self.jax_minimize_methods
-        ) & use_jax_minimize
-        self._minimize_method = minimize_method
-        self._minimize_kwargs = minimize_kwargs
 
     def __str__(self) -> str:
         output_lst = [
@@ -140,79 +79,11 @@ class LaplaceApproximation:
             output_lst.append("*** WARN: Fit did not converge successfully ***")
             output_lst.append("Current Parameters: ")
 
-        for param, sig, (low, upp) in zip(
-            self.params, self.params_sig, self.param_bounds
-        ):
-            params_line = f"\t {param} +/- {sig}"
-            if low is not None:
-                params_line += f"\t [Lower Bound = {low}]"
-            if upp is not None:
-                params_line += f"\t [Upper Bound = {upp}]"
-            output_lst.append(params_line)
+        output_lst.append(str(self.params))
 
         output_lst.append(f"Log Posterior Prob = {self.max_posterior_log_prob}")
 
         return "\n".join(output_lst)
-
-    def _transform_params(self, x: DeviceArray) -> DeviceArray:
-        if self.param_bounds is None:
-            return x
-        else:
-            return jnp.array(
-                [_transform(x, low, upp) for x, (low, upp) in zip(x, self.param_bounds)]
-            )
-
-    def _inverse_transform_params(self, x: DeviceArray) -> DeviceArray:
-        if self.param_bounds is None:
-            return x
-        else:
-            return jnp.array(
-                [
-                    _transform_inv(x, low, upp)
-                    for x, (low, upp) in zip(x, self.param_bounds)
-                ]
-            )
-
-    @property
-    def params(self) -> DeviceArray:
-        return self._transform_params(self.raw_params)
-
-    @params.setter
-    def params(self, x: DeviceArray) -> None:
-        self.raw_params = self._inverse_transform_params(x)
-
-    @property
-    def raw_params(self) -> DeviceArray:
-        return self._raw_params
-
-    @raw_params.setter
-    def raw_params(self, x: DeviceArray) -> DeviceArray:
-        self._raw_params = x
-        self._raw_params_cov = jnp.linalg.inv(self._objective_hess(x))
-        self._raw_params_sig = jnp.sqrt(jnp.diag(self._raw_params_cov))
-
-    @property
-    def raw_params_cov(self) -> DeviceArray:
-        return self._raw_params_cov
-
-    @property
-    def raw_params_sig(self) -> DeviceArray:
-        return self._raw_params_sig
-
-    @property
-    def params_cov(self) -> DeviceArray:
-        if self.raw_params_cov is None:
-            return None
-        else:
-            transform_jac = jax.jacfwd(self._transform_params)(self.raw_params)
-            return self.raw_params_cov * transform_jac ** 2
-
-    @property
-    def params_sig(self) -> DeviceArray:
-        if self.params_cov is None:
-            return None
-        else:
-            return jnp.sqrt(jnp.diag(self.params_cov))
 
     def posterior_log_prob(
         self, params: DeviceArray, y: DeviceArray, y_pred: DeviceArray
@@ -224,34 +95,34 @@ class LaplaceApproximation:
         # You can use self.fixed_params too
         raise NotImplementedError("Must implement the model() method")
 
-    def _objective(self, raw_params: DeviceArray) -> DeviceArray:
-        params = self._transform_params(raw_params)
+    def _objective(self, params_raw: DeviceArray) -> DeviceArray:
+        params = self.params.transform(params_raw)
         return self._objective_from_params(params)
 
-    def _objective_from_params(self, params: DeviceArray) -> DeviceArray:
-        y_pred = self.model(params=params, X=self._X)
-        log_prob = self.posterior_log_prob(params=params, y=self._y, y_pred=y_pred)
+    def _objective_from_params(self, params_x: DeviceArray) -> DeviceArray:
+        y_pred = self.model(params=params_x, X=self._X)
+        log_prob = self.posterior_log_prob(params=params_x, y=self._y, y_pred=y_pred)
         return -1 * log_prob
 
     @property
-    def _objective_grad(self) -> Callable[[DeviceArray], DeviceArray]:
-        # gradient of the negative log posterior
-        return jax.jit(grad(self._objective))
+    def _objective_jac(self) -> Callable[[DeviceArray], DeviceArray]:
+        # jacobian of the negative log posterior
+        return jit(jacfwd(self._objective))
 
     @property
     def _objective_hess(self) -> Callable[[DeviceArray], DeviceArray]:
-        # gradient of the negative log posterior
-        return jax.jit(hessian(self._objective))
+        # hessian of the negative log posterior
+        return jit(jacfwd(jacfwd(self._objective)))
 
-    def _store_result(
-        self,
-        raw_params: DeviceArray,
-        minimize_result: OptimizeResultType,
-        successful_fit: bool,
-    ) -> None:
-        self.raw_params = raw_params
+    def _store_result(self, minimize_result: OptimizeResult) -> None:
+
+        raw_params = jnp.array(minimize_result.x)
+        self.params.update_raw(
+            raw=raw_params, cov_raw=jnp.linalg.inv(self._objective_hess(raw_params))
+        )
+
         self._minimize_result = minimize_result
-        self._successful_fit = successful_fit
+        self._successful_fit = minimize_result.success
 
         if not self._successful_fit:
             print(
@@ -259,52 +130,25 @@ class LaplaceApproximation:
                 "check self._minimize_result for more info"
             )
 
-    def _fit_with_jax_minimize(self):
-        result = minimize_jax(
-            fun=self._objective,
-            x0=self.raw_params,
-            method=self._minimize_method,
-            **self._minimize_kwargs,
-        )
-
-        self._store_result(
-            raw_params=result.x,
-            minimize_result=result,
-            successful_fit=result.success.item(),
-        )
-
-    def _fit_with_scipy_minimize(self):
+    def _fit(self):
         result = minimize(
             fun=self._objective,
-            jac=self._objective_grad,
+            jac=self._objective_jac,
             hess=self._objective_hess,
-            x0=self.raw_params,
-            method=self._minimize_method,
+            x0=self.params.raw,
             **self._minimize_kwargs,
         )
 
-        self._store_result(
-            raw_params=jnp.array(result.x),
-            minimize_result=result,
-            successful_fit=result.success,
-        )
-
-    def _fit(self) -> None:
-        # Perform the fitting, using jax or regular scipy as specified
-        if self._use_jax_minimize:
-            self._fit_with_jax_minimize()
-        else:
-            self._fit_with_scipy_minimize()
+        self._store_result(result)
 
     def _laplace_logpdf(self, params: DeviceArray) -> DeviceArray:
-        inverse_transform_params_grad_fn = jax.jacfwd(self._inverse_transform_params)
-        grad_det = jnp.abs(jnp.linalg.det(inverse_transform_params_grad_fn(params)))
+        grad_det = jnp.abs(jnp.linalg.det(self.params.inverse_transform_jac(params)))
         log_grad_det = jnp.log(grad_det)
 
         raw_params_logpdf = jax.scipy.stats.multivariate_normal.logpdf(
-            x=self._inverse_transform_params(params),
-            mean=self.raw_params,
-            cov=self.raw_params_cov,
+            x=self.params.inverse_transform(params),
+            mean=self.params.raw,
+            cov=self.params.cov_raw,
         )
         return raw_params_logpdf + log_grad_det
 
@@ -315,18 +159,18 @@ class LaplaceApproximation:
         method: str = "laplace",
     ) -> DeviceArray:
         assert (
-            method in self.sample_methods
-        ), f"Method must be one of {self.sample_methods}"
+            method in self._sample_methods
+        ), f"Method must be one of {self._sample_methods}"
 
         prng_key_1, prng_key_2 = random.split(prng_key)
 
         raw_params_rvs = random.multivariate_normal(
             key=prng_key_1,
-            mean=self.raw_params,
-            cov=self.raw_params_cov,
+            mean=self.params.raw,
+            cov=self.params.cov_raw,
             shape=(n_samples,),
         )
-        vec_transform = jax.vmap(self._transform_params)
+        vec_transform = jax.vmap(self.params.transform)
         params = vec_transform(raw_params_rvs)
 
         if method == "gaussian_importance":
@@ -398,7 +242,7 @@ class LaplaceApproximation:
 
     @property
     def max_posterior_log_prob(self) -> float:
-        return -1 * self._objective(self.raw_params).item()
+        return -1 * self._objective(self.params.raw).item()
 
     def evaluate_samples(self, samples: DeviceArray) -> Tuple[float, float]:
         objective_func_map = jax.vmap(self._objective_from_params)
