@@ -85,11 +85,23 @@ class LaplaceApproximation:
 
         return "\n".join(output_lst)
 
-    def posterior_log_prob(
+    def log_prior(self, params: DeviceArray) -> DeviceArray:
+        # You can use self.fixed_params too
+        raise NotImplementedError("Must implemented the log_prior() method")
+
+    def log_likelihood(
         self, params: DeviceArray, y: DeviceArray, y_pred: DeviceArray
     ) -> DeviceArray:
         # You can use self.fixed_params too
-        raise NotImplementedError("Must implement the posterior_log_prob() method")
+        raise NotImplementedError("Must implement the log_likelihood() method")
+
+    def _log_posterior(
+        self, params: DeviceArray, y: DeviceArray, y_pred: DeviceArray
+    ) -> DeviceArray:
+        # You can use self.fixed_params too
+        return self.log_prior(params) + self.log_likelihood(
+            params=params, y=y, y_pred=y_pred
+        )
 
     def model(self, params: DeviceArray, X: DeviceArray) -> DeviceArray:
         # You can use self.fixed_params too
@@ -101,7 +113,7 @@ class LaplaceApproximation:
 
     def _objective_from_params(self, params_x: DeviceArray) -> DeviceArray:
         y_pred = self.model(params=params_x, X=self._X)
-        log_prob = self.posterior_log_prob(params=params_x, y=self._y, y_pred=y_pred)
+        log_prob = self._log_posterior(params=params_x, y=self._y, y_pred=y_pred)
         return -1 * log_prob
 
     @property
@@ -181,12 +193,10 @@ class LaplaceApproximation:
     def _importance_sample(
         self, prng_key: DeviceArray, params: DeviceArray
     ) -> DeviceArray:
-        model_vmap = jax.vmap(self.model, (0, None))
-        posterior_log_prob_vmap = jax.vmap(self.posterior_log_prob, (0, None, None))
+        objective_vmap = jax.vmap(self._objective_from_params)
         laplace_logpdf_vec = jax.vmap(self._laplace_logpdf)
 
-        y_pred = model_vmap(params, self._X)
-        true_log_prob = posterior_log_prob_vmap(params, self._y, y_pred)
+        true_log_prob = -1 * objective_vmap(params)
 
         weights = jnp.exp(
             true_log_prob.reshape(-1) - laplace_logpdf_vec(params).reshape(-1)
