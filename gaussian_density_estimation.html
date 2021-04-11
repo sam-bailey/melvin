@@ -305,7 +305,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/local/lib/python3.9/site-packages/scipy/optimize/_minimize.py:524: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.9.4/x64/lib/python3.9/site-packages/scipy/optimize/_minimize.py:524: RuntimeWarning: Method BFGS does not use Hessian information (hess).
   warn(&#39;Method %s does not use Hessian information (hess).&#39; % method,
 </pre></div>
 </div>
@@ -315,9 +315,9 @@ Fit converged successfully
 Fitted Parameters: 
 [
   3.024760513634774 +/- 0.04994854761415938,
-  0.9948447428567768 +/- 0.07930368410107926,	 [Lower Bound = 0.0]
+  0.9948447428567769 +/- 0.07930368410107927,	 [Lower Bound = 0.0]
 ]
-Log Posterior Prob = -4455.420834696257
+Log Posterior Prob = -4455.420834696258
 </pre></div>
 </div>
 </div>
@@ -368,7 +368,7 @@ Log Posterior Prob = -4455.420834696257
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.117284800407
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.117284800408
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
@@ -377,42 +377,42 @@ Log Posterior Prob = -4455.420834696257
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="nb">print</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">samples</span><span class="p">))</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">importance_samples</span><span class="p">))</span>
 
-<span class="nn">/workspaces/melvin/src/melvin/laplace.py</span> in <span class="ni">evaluate_samples</span><span class="nt">(self, samples)</span>
+<span class="nn">~/work/melvin/melvin/src/melvin/laplace.py</span> in <span class="ni">evaluate_samples</span><span class="nt">(self, samples)</span>
 <span class="g g-Whitespace">    </span><span class="mi">259</span>         <span class="n">log_posterior_samples</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">objective_func_map</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">260</span>         <span class="n">average_log_posterior</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_posterior_samples</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">261</span>         <span class="n">entropy_estimate</span> <span class="o">=</span> <span class="n">sample_entropy_estimate</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">262</span> 
 <span class="g g-Whitespace">    </span><span class="mi">263</span>         <span class="k">return</span> <span class="n">average_log_posterior</span> <span class="o">+</span> <span class="n">entropy_estimate</span>
 
-<span class="nn">/workspaces/melvin/src/melvin/laplace.py</span> in <span class="ni">sample_entropy_estimate</span><span class="nt">(x)</span>
+<span class="nn">~/work/melvin/melvin/src/melvin/laplace.py</span> in <span class="ni">sample_entropy_estimate</span><span class="nt">(x)</span>
 <span class="g g-Whitespace">     </span><span class="mi">33</span>         <span class="n">est_samples</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">n_samples</span> <span class="o">//</span> <span class="mi">2</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
 <span class="g g-Whitespace">     </span><span class="mi">34</span> 
 <span class="ne">---&gt; </span><span class="mi">35</span>     <span class="n">kde</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">kde_samples</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">kde</span><span class="p">(</span><span class="n">est_samples</span><span class="p">)))</span>
 <span class="g g-Whitespace">     </span><span class="mi">37</span> 
 
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">__init__</span><span class="nt">(self, dataset, bw_method, weights)</span>
+<span class="nn">/opt/hostedtoolcache/Python/3.9.4/x64/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">__init__</span><span class="nt">(self, dataset, bw_method, weights)</span>
 <span class="g g-Whitespace">    </span><span class="mi">204</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_neff</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">205</span> 
 <span class="ne">--&gt; </span><span class="mi">206</span>         <span class="bp">self</span><span class="o">.</span><span class="n">set_bandwidth</span><span class="p">(</span><span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">207</span> 
 <span class="g g-Whitespace">    </span><span class="mi">208</span>     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
 
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">set_bandwidth</span><span class="nt">(self, bw_method)</span>
+<span class="nn">/opt/hostedtoolcache/Python/3.9.4/x64/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">set_bandwidth</span><span class="nt">(self, bw_method)</span>
 <span class="g g-Whitespace">    </span><span class="mi">554</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">555</span> 
 <span class="ne">--&gt; </span><span class="mi">556</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_covariance</span><span class="p">()</span>
 <span class="g g-Whitespace">    </span><span class="mi">557</span> 
 <span class="g g-Whitespace">    </span><span class="mi">558</span>     <span class="k">def</span> <span class="nf">_compute_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">_compute_covariance</span><span class="nt">(self)</span>
+<span class="nn">/opt/hostedtoolcache/Python/3.9.4/x64/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">_compute_covariance</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">    </span><span class="mi">566</span>                                                <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">567</span>                                                <span class="n">aweights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">))</span>
 <span class="ne">--&gt; </span><span class="mi">568</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_data_inv_cov</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_covariance</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">569</span> 
 <span class="g g-Whitespace">    </span><span class="mi">570</span>         <span class="bp">self</span><span class="o">.</span><span class="n">covariance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_covariance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="o">**</span><span class="mi">2</span>
 
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/linalg/basic.py</span> in <span class="ni">inv</span><span class="nt">(a, overwrite_a, check_finite)</span>
+<span class="nn">/opt/hostedtoolcache/Python/3.9.4/x64/lib/python3.9/site-packages/scipy/linalg/basic.py</span> in <span class="ni">inv</span><span class="nt">(a, overwrite_a, check_finite)</span>
 <span class="g g-Whitespace">    </span><span class="mi">961</span>         <span class="n">inv_a</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">getri</span><span class="p">(</span><span class="n">lu</span><span class="p">,</span> <span class="n">piv</span><span class="p">,</span> <span class="n">lwork</span><span class="o">=</span><span class="n">lwork</span><span class="p">,</span> <span class="n">overwrite_lu</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">962</span>     <span class="k">if</span> <span class="n">info</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">963</span>         <span class="k">raise</span> <span class="n">LinAlgError</span><span class="p">(</span><span class="s2">&quot;singular matrix&quot;</span><span class="p">)</span>
