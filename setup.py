@@ -9,9 +9,9 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ["numpy", "scipy", "matplotlib", "jax", "jaxlib", "tqdm", "pandas"]
+requirements = ["numpy", "scipy", "matplotlib", "jax", "jaxlib", "pandas"]
 
-requirements_dev = ["jupyter", "pre-commit"]
+requirements_dev = ["jupyter", "pre-commit", "jupyter-book"]
 
 setup(
     name="melvin",
@@ -19,7 +19,7 @@ setup(
     description="Maximum likelihood estimation and statistics, built on top of Jax",
     author="Sam Bailey",
     author_email="samcbailey90@gmail.com",
-    # url="http://github.com/sam-bailey/tyme",
+    url="http://github.com/sam-bailey/melvin",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     long_description=open("README.md").read(),
