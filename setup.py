@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 
 requirements = ["numpy", "scipy", "matplotlib", "jax", "jaxlib", "pandas"]
 
-requirements_dev = ["jupyter", "pre-commit", "jupyter-book"]
+requirements_dev = ["jupyter", "pre-commit", "jupyter-book", "ghp-import"]
 
 setup(
     name="melvin",
