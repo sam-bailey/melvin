@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Multivariate Bayesian Linear Model &#8212; Melvin</title>
+    <title>4. Multivariate Bayesian Linear Model &#8212; Melvin</title>
     
   <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -55,7 +55,7 @@
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Latent Gaussian Density Estimation" href="gaussian_density_estimation.html" />
+    <link rel="prev" title="3. Latent Gaussian Density Estimation" href="gaussian_density_estimation.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -87,20 +87,35 @@
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <ul class="nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="beta_posterior.html">
-   One Dimension Beta Distribution
+  <a class="reference internal" href="introduction.html">
+   Melvin
   </a>
  </li>
 </ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Examples
+ </span>
+</p>
 <ul class="current nav sidenav_l1">
  <li class="toctree-l1">
+  <a class="reference internal" href="beta_posterior.html">
+   1. One Dimension Beta Distribution
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="beta_posterior.html#two-dimensional-normal-gamma">
+   2. Two Dimensional: Normal / Gamma
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="gaussian_density_estimation.html">
-   Latent Gaussian Density Estimation
+   3. Latent Gaussian Density Estimation
   </a>
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Multivariate Bayesian Linear Model
+   4. Multivariate Bayesian Linear Model
   </a>
  </li>
 </ul>
@@ -184,7 +199,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/sam-bailey/melvin/master?urlpath=lab/tree/book/melvin/multivariate_linear_model.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/sam-bailey/melvin/master?urlpath=tree/book/melvin/multivariate_linear_model.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="_static/images/logo_binder.svg"
@@ -210,7 +225,7 @@
               <div>
                 
   <div class="section" id="multivariate-bayesian-linear-model">
-<h1>Multivariate Bayesian Linear Model<a class="headerlink" href="#multivariate-bayesian-linear-model" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">4. </span>Multivariate Bayesian Linear Model<a class="headerlink" href="#multivariate-bayesian-linear-model" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -331,27 +346,27 @@ Fixed Parameters: []
 Fit converged successfully
 Fitted Parameters: 
 [
-  1.8545680191993663 +/- 0.09272195095167172,	 [Lower Bound = 0.0]
-  -0.3817689123091307 +/- 0.1494010936747737,
-  -0.6289503767735043 +/- 0.14419398401132766,
-  0.24525477936465637 +/- 0.14138182213208605,
-  -1.0461024063110052 +/- 0.1264792595376068,
-  1.0260546709546454 +/- 0.12825306065854983,
-  1.374353106948809 +/- 0.14776026363687939,
-  -1.2281199536928442 +/- 0.14627975718112787,
-  0.48482383719377986 +/- 0.13575234386962834,
-  -1.784897716041474 +/- 0.1293721996624074,
-  0.6737377511828557 +/- 0.13886640029042147,
-  0.6493333626842134 +/- 0.14375742754915977,
-  -1.0380128475146542 +/- 0.14765524247581746,
-  -1.2232863181923903 +/- 0.13453458593813944,
-  -1.2492718564462546 +/- 0.14506795043922488,
-  1.4507643357112296 +/- 0.1303539997918905,
-  0.7712677082553242 +/- 0.11995210654406582,
-  0.5624949147095913 +/- 0.12902459374853462,
-  -0.01670756712088431 +/- 0.13251652752627707,
-  -0.8227827025516227 +/- 0.15265917255400852,
-  0.44370798401974804 +/- 0.13134989662352356,
+  1.854568019199449 +/- 0.09272195095167997,	 [Lower Bound = 0.0]
+  -0.3817689123091382 +/- 0.14940109367478036,
+  -0.6289503767733635 +/- 0.14419398401133407,
+  0.24525477936457957 +/- 0.14138182213209233,
+  -1.0461024063109976 +/- 0.1264792595376124,
+  1.026054670954664 +/- 0.12825306065855555,
+  1.3743531069487707 +/- 0.14776026363688596,
+  -1.2281199536928509 +/- 0.14627975718113442,
+  0.4848238371937745 +/- 0.1357523438696344,
+  -1.7848977160414998 +/- 0.12937219966241317,
+  0.6737377511828874 +/- 0.13886640029042768,
+  0.6493333626842216 +/- 0.1437574275491662,
+  -1.038012847514606 +/- 0.14765524247582404,
+  -1.2232863181923752 +/- 0.13453458593814543,
+  -1.2492718564462855 +/- 0.14506795043923135,
+  1.4507643357112376 +/- 0.1303539997918963,
+  0.7712677082552469 +/- 0.11995210654407117,
+  0.5624949147095955 +/- 0.12902459374854036,
+  -0.01670756712081215 +/- 0.13251652752628298,
+  -0.8227827025515791 +/- 0.15265917255401534,
+  0.44370798401973094 +/- 0.13134989662352942,
 ]
 Log Posterior Prob = -522.4341559217474
 </pre></div>
@@ -385,7 +400,7 @@ True noise
 2.0
 
 Fitted noise
-1.8545680191993663
+1.854568019199449
 </pre></div>
 </div>
 </div>
@@ -455,7 +470,7 @@ Fitted noise
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="gaussian_density_estimation.html" title="previous page">Latent Gaussian Density Estimation</a>
+    <a class='left-prev' id="prev-link" href="gaussian_density_estimation.html" title="previous page"><span class="section-number">3. </span>Latent Gaussian Density Estimation</a>
 
         </div>
         

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Latent Gaussian Density Estimation &#8212; Melvin</title>
+    <title>3. Latent Gaussian Density Estimation &#8212; Melvin</title>
     
   <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -55,8 +55,8 @@
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Multivariate Bayesian Linear Model" href="multivariate_linear_model.html" />
-    <link rel="prev" title="One Dimension Beta Distribution" href="beta_posterior.html" />
+    <link rel="next" title="4. Multivariate Bayesian Linear Model" href="multivariate_linear_model.html" />
+    <link rel="prev" title="1. One Dimension Beta Distribution" href="beta_posterior.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -88,20 +88,35 @@
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <ul class="nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="beta_posterior.html">
-   One Dimension Beta Distribution
+  <a class="reference internal" href="introduction.html">
+   Melvin
   </a>
  </li>
 </ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Examples
+ </span>
+</p>
 <ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="beta_posterior.html">
+   1. One Dimension Beta Distribution
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="beta_posterior.html#two-dimensional-normal-gamma">
+   2. Two Dimensional: Normal / Gamma
+  </a>
+ </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Latent Gaussian Density Estimation
+   3. Latent Gaussian Density Estimation
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="multivariate_linear_model.html">
-   Multivariate Bayesian Linear Model
+   4. Multivariate Bayesian Linear Model
   </a>
  </li>
 </ul>
@@ -185,7 +200,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/sam-bailey/melvin/master?urlpath=lab/tree/book/melvin/gaussian_density_estimation.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/sam-bailey/melvin/master?urlpath=tree/book/melvin/gaussian_density_estimation.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="_static/images/logo_binder.svg"
@@ -211,7 +226,7 @@
               <div>
                 
   <div class="section" id="latent-gaussian-density-estimation">
-<h1>Latent Gaussian Density Estimation<a class="headerlink" href="#latent-gaussian-density-estimation" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3. </span>Latent Gaussian Density Estimation<a class="headerlink" href="#latent-gaussian-density-estimation" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -315,7 +330,7 @@ Fit converged successfully
 Fitted Parameters: 
 [
   3.024760513634774 +/- 0.04994854761415938,
-  0.9948447428567769 +/- 0.07930368410107927,	 [Lower Bound = 0.0]
+  0.9948447428567766 +/- 0.07930368410107931,	 [Lower Bound = 0.0]
 ]
 Log Posterior Prob = -4455.420834696258
 </pre></div>
@@ -368,7 +383,7 @@ Log Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.117284800408
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.117284800407
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
@@ -483,8 +498,8 @@ Log Posterior Prob = -4455.420834696258
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="beta_posterior.html" title="previous page">One Dimension Beta Distribution</a>
-    <a class='right-next' id="next-link" href="multivariate_linear_model.html" title="next page">Multivariate Bayesian Linear Model</a>
+    <a class='left-prev' id="prev-link" href="beta_posterior.html" title="previous page"><span class="section-number">1. </span>One Dimension Beta Distribution</a>
+    <a class='right-next' id="next-link" href="multivariate_linear_model.html" title="next page"><span class="section-number">4. </span>Multivariate Bayesian Linear Model</a>
 
         </div>
         
