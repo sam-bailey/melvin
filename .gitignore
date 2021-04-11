@@ -6,3 +6,4 @@
 .vscode
 *.egg-info
 __pycache__
+book/melvin/_build

@@ -1,0 +1,15 @@
+title: "Melvin"
+author: "Sam Bailey"
+copyright: "2021"
+logo: images/logo.png
+repository:
+  url: https://github.com/sam-bailey/melvin
+  path_to_book: "book/melvin"
+html:
+  use_repository_button: true
+  use_issues_button: true
+  favicon: images/favicon.png
+execute:
+  timeout: 120
+launch_buttons:
+  notebook_interface: jupyterlab

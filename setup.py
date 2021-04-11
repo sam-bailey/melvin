@@ -16,7 +16,7 @@ requirements_dev = ["jupyter", "pre-commit", "jupyter-book"]
 setup(
     name="melvin",
     version="0.1.0",
-    description="Maximum likelihood estimation and statistics, built on top of Jax",
+    description="Maximum likelihood methods for variational inference, useful for fast bayesian statistics, built on top of Jax",
     author="Sam Bailey",
     author_email="samcbailey90@gmail.com",
     url="http://github.com/sam-bailey/melvin",
@@ -30,9 +30,8 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Mathematics",
     ],
-    keywords="statistics maximum likelihood estimation",
+    keywords="maximum likelihood bayesian variational inference",
 )
