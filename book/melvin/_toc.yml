@@ -1,3 +1,8 @@
-- file: beta_posterior.ipynb
-- file: gaussian_density_estimation.ipynb
-- file: multivariate_linear_model.ipynb
+- file: introduction.md
+  numbered: true
+
+- part: Examples
+  chapters:
+  - file: beta_posterior.ipynb
+  - file: gaussian_density_estimation.ipynb
+  - file: multivariate_linear_model.ipynb

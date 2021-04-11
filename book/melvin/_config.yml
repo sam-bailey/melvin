@@ -11,5 +11,5 @@ html:
   favicon: images/favicon.png
 execute:
   timeout: 120
-launch_buttons:
-  notebook_interface: jupyterlab
+# launch_buttons:
+  # notebook_interface: jupyterlab
