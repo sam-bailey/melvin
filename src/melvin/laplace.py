@@ -9,11 +9,12 @@ import jax.numpy as jnp
 import matplotlib.pylab as plt
 from jax import jit, random
 from jax.api import jacfwd
-from jax.interpreters.xla import _DeviceArray as DeviceArray
+from jaxlib.xla_extension import DeviceArray
 from scipy.optimize import minimize
 from scipy.optimize.optimize import OptimizeResult
 from scipy.stats import gaussian_kde
 
+from .distributions import DistributionType, distributions
 from .model_parameters import ModelParameters
 
 
@@ -52,6 +53,7 @@ class LaplaceApproximation:
         y: DeviceArray = jnp.array([]),
         fixed_params: DeviceArray = jnp.array([]),
         minimize_kwargs: Dict[str, Any] = {},
+        base_distribution: str = "normal",
     ):
         self.name = name
 
@@ -64,11 +66,15 @@ class LaplaceApproximation:
         self._minimize_kwargs = self._default_minimize_kwargs
         self._minimize_kwargs.update(minimize_kwargs)
 
+        self._base_distribution: DistributionType = distributions.get(base_distribution)
+        self._base_distribution_name = base_distribution
+
         self._fit()
 
     def __str__(self) -> str:
         output_lst = [
             f"Laplace Approximation: {self.name}",
+            f"Base distribution: {self._base_distribution_name}",
             f"Fixed Parameters: {self.fixed_params}",
         ]
 
@@ -81,7 +87,7 @@ class LaplaceApproximation:
 
         output_lst.append(str(self.params))
 
-        output_lst.append(f"Log Posterior Prob = {self.max_posterior_log_prob}")
+        output_lst.append(f"MAP Posterior Prob = {self.max_posterior_log_prob}")
 
         return "\n".join(output_lst)
 
@@ -105,7 +111,7 @@ class LaplaceApproximation:
 
     def model(self, params: DeviceArray, X: DeviceArray) -> DeviceArray:
         # You can use self.fixed_params too
-        raise NotImplementedError("Must implement the model() method")
+        return jnp.array([jnp.nan])
 
     def _objective(self, params_raw: DeviceArray) -> DeviceArray:
         params = self.params.transform(params_raw)
@@ -157,10 +163,10 @@ class LaplaceApproximation:
         grad_det = jnp.abs(jnp.linalg.det(self.params.inverse_transform_jac(params)))
         log_grad_det = jnp.log(grad_det)
 
-        raw_params_logpdf = jax.scipy.stats.multivariate_normal.logpdf(
+        raw_params_logpdf = self._base_distribution(
+            mean=self.params.raw, cov=self.params.cov_raw
+        ).logpdf(
             x=self.params.inverse_transform(params),
-            mean=self.params.raw,
-            cov=self.params.cov_raw,
         )
         return raw_params_logpdf + log_grad_det
 
@@ -176,12 +182,11 @@ class LaplaceApproximation:
 
         prng_key_1, prng_key_2 = random.split(prng_key)
 
-        raw_params_rvs = random.multivariate_normal(
-            key=prng_key_1,
+        raw_params_rvs = self._base_distribution(
             mean=self.params.raw,
             cov=self.params.cov_raw,
-            shape=(n_samples,),
-        )
+        ).rvs(prng_key=prng_key_1, n_samples=n_samples)
+
         vec_transform = jax.vmap(self.params.transform)
         params = vec_transform(raw_params_rvs)
 
