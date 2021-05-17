@@ -41,6 +41,7 @@ def sample_entropy_estimate(x: DeviceArray) -> DeviceArray:
 class LaplaceApproximation:
     _default_minimize_kwargs = {"method": "BFGS"}
     param_bounds: Optional[List[Tuple[float]]] = None
+    _max_samples_for_auto = 10_000
 
     def __init__(
         self,
@@ -183,7 +184,8 @@ class LaplaceApproximation:
                     true_log_prob_fn=_true_log_prob_fn,
                 )
                 samples = sampler(prng_key=prng_key, n_samples=n_samples)
-                perf = self.evaluate_samples(samples)
+                n_samples_for_eval = min([n_samples, self._max_samples_for_auto])
+                perf = self.evaluate_samples(samples[:n_samples_for_eval, :])
 
                 if verbose:
                     print(f"Method = {sampler_name},\t Perf = {perf}")
