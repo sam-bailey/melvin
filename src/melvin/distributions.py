@@ -1,13 +1,16 @@
 from typing import Any, Callable, Protocol
 
 from jax import random
-from jax.interpreters.xla import _DeviceArray as DeviceArray
 from jax.scipy import stats
+from jaxlib.xla_extension import DeviceArray
 
 from .object_tagger import ObjectTagger
 
 
 class DistributionType(Protocol):
+    def __init__(self, mean: DeviceArray, cov: DeviceArray):
+        "Must be initialized with a mean and cov"
+
     def rvs(self, prng_key: DeviceArray, n_samples: int) -> DeviceArray:
         "Must be able to sample from a distribution"
 

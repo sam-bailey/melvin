@@ -16,6 +16,7 @@ from scipy.stats import gaussian_kde
 
 from .distributions import DistributionType, distributions
 from .model_parameters import ModelParameters
+from .samplers import samplers
 
 
 def sample_entropy_estimate(x: DeviceArray) -> DeviceArray:
@@ -38,10 +39,6 @@ def sample_entropy_estimate(x: DeviceArray) -> DeviceArray:
 
 
 class LaplaceApproximation:
-    _sample_methods = [
-        "laplace",
-        "gaussian_importance",
-    ]  # Add t-distribution importance
     _default_minimize_kwargs = {"method": "BFGS"}
     param_bounds: Optional[List[Tuple[float]]] = None
 
@@ -174,49 +171,22 @@ class LaplaceApproximation:
         self,
         prng_key: DeviceArray,
         n_samples: int,
-        method: str = "laplace",
+        method: str = "simple",
     ) -> DeviceArray:
-        assert (
-            method in self._sample_methods
-        ), f"Method must be one of {self._sample_methods}"
 
-        prng_key_1, prng_key_2 = random.split(prng_key)
-
-        raw_params_rvs = self._base_distribution(
-            mean=self.params.raw,
-            cov=self.params.cov_raw,
-        ).rvs(prng_key=prng_key_1, n_samples=n_samples)
-
-        vec_transform = jax.vmap(self.params.transform)
-        params = vec_transform(raw_params_rvs)
-
-        if method == "gaussian_importance":
-            params = self._importance_sample(prng_key_2, params)
-
-        return params
-
-    def _importance_sample(
-        self, prng_key: DeviceArray, params: DeviceArray
-    ) -> DeviceArray:
         objective_vmap = jax.vmap(self._objective_from_params)
-        laplace_logpdf_vec = jax.vmap(self._laplace_logpdf)
 
-        true_log_prob = -1 * objective_vmap(params)
+        def _true_log_prob_fn(params: DeviceArray) -> DeviceArray:
+            return -1 * objective_vmap(params)
 
-        weights = jnp.exp(
-            true_log_prob.reshape(-1) - laplace_logpdf_vec(params).reshape(-1)
-        )
-        weights /= jnp.sum(weights)
-        max_weight = 1.0 / jnp.sqrt(len(weights))
-
-        truncated_weights = jnp.minimum(weights, max_weight)
-
-        idx = jnp.arange(len(truncated_weights))
-        rand_idx = random.choice(
-            key=prng_key, a=idx, shape=idx.shape, p=truncated_weights
+        sampler_cls = samplers.get(method)
+        sampler = sampler_cls(
+            params=self.params,
+            base_distribution=self._base_distribution,
+            true_log_prob_fn=_true_log_prob_fn,
         )
 
-        return params[rand_idx, :]
+        return sampler(prng_key=prng_key, n_samples=n_samples)
 
     def sample_params_map(
         self,
@@ -224,7 +194,7 @@ class LaplaceApproximation:
         n_samples: int,
         func: Callable[[DeviceArray, Any], DeviceArray],
         args: Tuple,
-        method: str = "laplace",
+        method: str = "simple",
     ) -> DeviceArray:
         params_rvs = self.sample_params(
             prng_key=prng_key, n_samples=n_samples, method=method
@@ -245,7 +215,7 @@ class LaplaceApproximation:
         X: DeviceArray,
         prng_key: DeviceArray,
         n_samples: int,
-        method: str = "laplace",
+        method: str = "simple",
     ) -> DeviceArray:
         params_rvs = self.sample_params(
             prng_key=prng_key, n_samples=n_samples, method=method
