@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3. Latent Gaussian Density Estimation &#8212; Melvin</title>
+    <title>2. Latent Gaussian Density Estimation &#8212; Melvin</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -52,8 +52,8 @@
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. Multivariate Bayesian Linear Model" href="multivariate_linear_model.html" />
-    <link rel="prev" title="1. One Dimension Beta Distribution" href="beta_posterior.html" />
+    <link rel="next" title="3. Multivariate Bayesian Linear Model" href="multivariate_linear_model.html" />
+    <link rel="prev" title="1. Simple Distribution Fitting" href="beta_posterior.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -98,17 +98,17 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="beta_posterior.html">
-   1. One Dimension Beta Distribution
+   1. Simple Distribution Fitting
   </a>
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   3. Latent Gaussian Density Estimation
+   2. Latent Gaussian Density Estimation
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="multivariate_linear_model.html">
-   4. Multivariate Bayesian Linear Model
+   3. Multivariate Bayesian Linear Model
   </a>
  </li>
 </ul>
@@ -219,7 +219,7 @@
               <div>
                 
   <div class="section" id="latent-gaussian-density-estimation">
-<h1><span class="section-number">3. </span>Latent Gaussian Density Estimation<a class="headerlink" href="#latent-gaussian-density-estimation" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2. </span>Latent Gaussian Density Estimation<a class="headerlink" href="#latent-gaussian-density-estimation" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -334,7 +334,7 @@ MAP Posterior Prob = -4455.420834696258
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;laplace&quot;</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">samples</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">samples</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">cmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">LATENT_STD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True parameters&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">LATENT_MEAN</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
@@ -347,36 +347,13 @@ MAP Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="mi">6518275</span><span class="n">a524e</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;laplace&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">samples</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">samples</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">cmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">LATENT_STD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True parameters&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">LATENT_MEAN</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
-
-<span class="nn">~/work/melvin/melvin/src/melvin/laplace.py</span> in <span class="ni">sample_params</span><span class="nt">(self, prng_key, n_samples, method)</span>
-<span class="g g-Whitespace">    </span><span class="mi">180</span>             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">objective_vmap</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">181</span> 
-<span class="ne">--&gt; </span><span class="mi">182</span>         <span class="n">sampler_cls</span> <span class="o">=</span> <span class="n">samplers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">183</span>         <span class="n">sampler</span> <span class="o">=</span> <span class="n">sampler_cls</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">184</span>             <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-
-<span class="nn">~/work/melvin/melvin/src/melvin/object_tagger.py</span> in <span class="ni">get</span><span class="nt">(self, object_name)</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span> 
-<span class="g g-Whitespace">     </span><span class="mi">15</span>     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">16</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">object_name</span><span class="p">]</span>
-
-<span class="ne">KeyError</span>: &#39;laplace&#39;
-</pre></div>
-</div>
+<img alt="_images/gaussian_density_estimation_6_0.png" src="_images/gaussian_density_estimation_6_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">importance_samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;gaussian_importance&quot;</span><span class="p">)</span>
+<span class="n">importance_samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;importance&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">importance_samples</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">importance_samples</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">cmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">LATENT_STD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True parameters&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">LATENT_MEAN</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
@@ -389,7 +366,8 @@ MAP Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/gaussian_density_estimation_7_0.svg" src="_images/gaussian_density_estimation_7_0.svg" /></div>
+<img alt="_images/gaussian_density_estimation_7_0.png" src="_images/gaussian_density_estimation_7_0.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -399,58 +377,10 @@ MAP Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.117284800407
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.114075145038
 </pre></div>
 </div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">LinAlgError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">8</span><span class="o">-</span><span class="n">d6d2a4752ce1</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="nb">print</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">samples</span><span class="p">))</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">importance_samples</span><span class="p">))</span>
-
-<span class="nn">/workspaces/melvin/src/melvin/laplace.py</span> in <span class="ni">evaluate_samples</span><span class="nt">(self, samples)</span>
-<span class="g g-Whitespace">    </span><span class="mi">257</span>         <span class="n">log_posterior_samples</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">objective_func_map</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">258</span>         <span class="n">average_log_posterior</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_posterior_samples</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">259</span>         <span class="n">entropy_estimate</span> <span class="o">=</span> <span class="n">sample_entropy_estimate</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">260</span> 
-<span class="g g-Whitespace">    </span><span class="mi">261</span>         <span class="k">return</span> <span class="n">average_log_posterior</span> <span class="o">+</span> <span class="n">entropy_estimate</span>
-
-<span class="nn">/workspaces/melvin/src/melvin/laplace.py</span> in <span class="ni">sample_entropy_estimate</span><span class="nt">(x)</span>
-<span class="g g-Whitespace">     </span><span class="mi">33</span>         <span class="n">est_samples</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">n_samples</span> <span class="o">//</span> <span class="mi">2</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
-<span class="g g-Whitespace">     </span><span class="mi">34</span> 
-<span class="ne">---&gt; </span><span class="mi">35</span>     <span class="n">kde</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">kde_samples</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">kde</span><span class="p">(</span><span class="n">est_samples</span><span class="p">)))</span>
-<span class="g g-Whitespace">     </span><span class="mi">37</span> 
-
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">__init__</span><span class="nt">(self, dataset, bw_method, weights)</span>
-<span class="g g-Whitespace">    </span><span class="mi">204</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_neff</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">205</span> 
-<span class="ne">--&gt; </span><span class="mi">206</span>         <span class="bp">self</span><span class="o">.</span><span class="n">set_bandwidth</span><span class="p">(</span><span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">207</span> 
-<span class="g g-Whitespace">    </span><span class="mi">208</span>     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
-
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">set_bandwidth</span><span class="nt">(self, bw_method)</span>
-<span class="g g-Whitespace">    </span><span class="mi">554</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">555</span> 
-<span class="ne">--&gt; </span><span class="mi">556</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_covariance</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">557</span> 
-<span class="g g-Whitespace">    </span><span class="mi">558</span>     <span class="k">def</span> <span class="nf">_compute_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/stats/kde.py</span> in <span class="ni">_compute_covariance</span><span class="nt">(self)</span>
-<span class="g g-Whitespace">    </span><span class="mi">566</span>                                                <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">567</span>                                                <span class="n">aweights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">))</span>
-<span class="ne">--&gt; </span><span class="mi">568</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_data_inv_cov</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_covariance</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">569</span> 
-<span class="g g-Whitespace">    </span><span class="mi">570</span>         <span class="bp">self</span><span class="o">.</span><span class="n">covariance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_covariance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="o">**</span><span class="mi">2</span>
-
-<span class="nn">/usr/local/lib/python3.9/site-packages/scipy/linalg/basic.py</span> in <span class="ni">inv</span><span class="nt">(a, overwrite_a, check_finite)</span>
-<span class="g g-Whitespace">    </span><span class="mi">961</span>         <span class="n">inv_a</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">getri</span><span class="p">(</span><span class="n">lu</span><span class="p">,</span> <span class="n">piv</span><span class="p">,</span> <span class="n">lwork</span><span class="o">=</span><span class="n">lwork</span><span class="p">,</span> <span class="n">overwrite_lu</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">962</span>     <span class="k">if</span> <span class="n">info</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">963</span>         <span class="k">raise</span> <span class="n">LinAlgError</span><span class="p">(</span><span class="s2">&quot;singular matrix&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">964</span>     <span class="k">if</span> <span class="n">info</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">965</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;illegal value in </span><span class="si">%d</span><span class="s1">-th argument of internal &#39;</span>
-
-<span class="ne">LinAlgError</span>: singular matrix
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.119131400793
 </pre></div>
 </div>
 </div>
@@ -470,7 +400,7 @@ MAP Posterior Prob = -4455.420834696258
 <span class="n">y_pdf</span> <span class="o">=</span> <span class="n">get_pdf</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
 <span class="n">y_pdf_samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params_map</span><span class="p">(</span>
-    <span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">get_pdf</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,),</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;laplace&quot;</span>
+    <span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">get_pdf</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,),</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span>
     <span class="p">)</span>
 <span class="n">y_pdf_low</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pdf_samples</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">y_pdf_upp</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pdf_samples</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -485,7 +415,8 @@ MAP Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/gaussian_density_estimation_9_0.svg" src="_images/gaussian_density_estimation_9_0.svg" /></div>
+<img alt="_images/gaussian_density_estimation_9_0.png" src="_images/gaussian_density_estimation_9_0.png" />
+</div>
 </div>
 </div>
 
@@ -514,8 +445,8 @@ MAP Posterior Prob = -4455.420834696258
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="beta_posterior.html" title="previous page"><span class="section-number">1. </span>One Dimension Beta Distribution</a>
-    <a class='right-next' id="next-link" href="multivariate_linear_model.html" title="next page"><span class="section-number">4. </span>Multivariate Bayesian Linear Model</a>
+    <a class='left-prev' id="prev-link" href="beta_posterior.html" title="previous page"><span class="section-number">1. </span>Simple Distribution Fitting</a>
+    <a class='right-next' id="next-link" href="multivariate_linear_model.html" title="next page"><span class="section-number">3. </span>Multivariate Bayesian Linear Model</a>
 
         </div>
         

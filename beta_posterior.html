@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>1. One Dimension Beta Distribution &#8212; Melvin</title>
+    <title>1. Simple Distribution Fitting &#8212; Melvin</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -52,7 +52,7 @@
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3. Latent Gaussian Density Estimation" href="gaussian_density_estimation.html" />
+    <link rel="next" title="2. Latent Gaussian Density Estimation" href="gaussian_density_estimation.html" />
     <link rel="prev" title="Introduction" href="introduction.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -98,17 +98,17 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   1. One Dimension Beta Distribution
+   1. Simple Distribution Fitting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="gaussian_density_estimation.html">
-   3. Latent Gaussian Density Estimation
+   2. Latent Gaussian Density Estimation
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="multivariate_linear_model.html">
-   4. Multivariate Bayesian Linear Model
+   3. Multivariate Bayesian Linear Model
   </a>
  </li>
 </ul>
@@ -215,15 +215,17 @@
             </div>
             <nav id="bd-toc-nav">
                 <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   1. One Dimension Beta Distribution
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#one-dimension-beta-distribution">
+   1.1. One Dimension Beta Distribution
   </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#two-dimensional-normal-gamma">
-   2. Two Dimensional: Normal / Gamma
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#two-dimensional-normal-gamma">
+     1.1.1. Two Dimensional: Normal / Gamma
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -236,8 +238,11 @@
         
               <div>
                 
-  <div class="section" id="one-dimension-beta-distribution">
-<h1><span class="section-number">1. </span>One Dimension Beta Distribution<a class="headerlink" href="#one-dimension-beta-distribution" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="simple-distribution-fitting">
+<h1><span class="section-number">1. </span>Simple Distribution Fitting<a class="headerlink" href="#simple-distribution-fitting" title="Permalink to this headline">¶</a></h1>
+<p>In these examples we just use our laplace approximation to fit a known posterior distribution in one and two dimensions, and see how well it reproduces the posterior.</p>
+<div class="section" id="one-dimension-beta-distribution">
+<h2><span class="section-number">1.1. </span>One Dimension Beta Distribution<a class="headerlink" href="#one-dimension-beta-distribution" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -360,14 +365,13 @@ MAP Posterior Prob = 1.030747930559878
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.028725638395464936
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.010597685119911326
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.016996090774653805
 </pre></div>
 </div>
 </div>
 </div>
-</div>
 <div class="section" id="two-dimensional-normal-gamma">
-<h1><span class="section-number">2. </span>Two Dimensional: Normal / Gamma<a class="headerlink" href="#two-dimensional-normal-gamma" title="Permalink to this headline">¶</a></h1>
+<h3><span class="section-number">1.1.1. </span>Two Dimensional: Normal / Gamma<a class="headerlink" href="#two-dimensional-normal-gamma" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_MU</span> <span class="o">=</span> <span class="mf">2.0</span>
@@ -498,8 +502,10 @@ WARNING:matplotlib.legend:No handles with labels found to put in legend.
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.02558080042161759
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.014126322603956964
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.02915861325187663
 </pre></div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -531,7 +537,7 @@ WARNING:matplotlib.legend:No handles with labels found to put in legend.
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="introduction.html" title="previous page">Introduction</a>
-    <a class='right-next' id="next-link" href="gaussian_density_estimation.html" title="next page"><span class="section-number">3. </span>Latent Gaussian Density Estimation</a>
+    <a class='right-next' id="next-link" href="gaussian_density_estimation.html" title="next page"><span class="section-number">2. </span>Latent Gaussian Density Estimation</a>
 
         </div>
         
