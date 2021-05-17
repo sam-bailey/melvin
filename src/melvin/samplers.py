@@ -29,6 +29,9 @@ class SimpleSampler:
             cov=self._params.cov_raw,
         )
         self._true_log_prob_fn = true_log_prob_fn
+        self._laplace_log_prob_fn = self._params.transform_logpdf(
+            self._base_distribution.logpdf
+        )
 
     def __call__(self, prng_key: DeviceArray, n_samples: int) -> DeviceArray:
         raw_params_rvs = self._base_distribution.rvs(
@@ -46,18 +49,9 @@ class ImportanceSampler(SimpleSampler):
     based on weights calculated from the true_log_prob_fn
     """
 
-    def _laplace_logpdf(self, params: DeviceArray) -> DeviceArray:
-        grad_det = jnp.abs(jnp.linalg.det(self._params.inverse_transform_jac(params)))
-        log_grad_det = jnp.log(grad_det)
-
-        raw_params_logpdf = self._base_distribution.logpdf(
-            x=self._params.inverse_transform(params),
-        )
-        return raw_params_logpdf + log_grad_det
-
     def _get_raw_importance_weights(self, samples: DeviceArray) -> DeviceArray:
         true_log_prob = self._true_log_prob_fn(samples).reshape(-1)
-        laplace_logpdf_vec = jax.vmap(self._laplace_logpdf)
+        laplace_logpdf_vec = jax.vmap(self._laplace_log_prob_fn)
         base_log_prob = laplace_logpdf_vec(samples).reshape(-1)
 
         weights = jnp.exp(
@@ -70,7 +64,7 @@ class ImportanceSampler(SimpleSampler):
 
     def _truncate_importance_weights(self, weights: DeviceArray) -> DeviceArray:
         weights /= jnp.mean(weights)
-        max_weight = 1.0 / jnp.sqrt(len(weights))
+        max_weight = jnp.sqrt(len(weights))
         truncated_weights = jnp.minimum(weights, max_weight)
         return truncated_weights
 

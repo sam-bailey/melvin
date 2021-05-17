@@ -135,6 +135,11 @@ class LaplaceApproximation:
         self.params.update_raw(
             raw=raw_params, cov_raw=jnp.linalg.inv(self._objective_hess(raw_params))
         )
+        self.laplace_log_posterior = self.params.transform_logpdf(
+            self._base_distribution(
+                mean=self.params.raw, cov=self.params.cov_raw
+            ).logpdf
+        )
 
         self._minimize_result = minimize_result
         self._successful_fit = minimize_result.success
@@ -155,17 +160,6 @@ class LaplaceApproximation:
         )
 
         self._store_result(result)
-
-    def _laplace_logpdf(self, params: DeviceArray) -> DeviceArray:
-        grad_det = jnp.abs(jnp.linalg.det(self.params.inverse_transform_jac(params)))
-        log_grad_det = jnp.log(grad_det)
-
-        raw_params_logpdf = self._base_distribution(
-            mean=self.params.raw, cov=self.params.cov_raw
-        ).logpdf(
-            x=self.params.inverse_transform(params),
-        )
-        return raw_params_logpdf + log_grad_det
 
     def sample_params(
         self,

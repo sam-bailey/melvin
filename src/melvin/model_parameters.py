@@ -186,6 +186,20 @@ class ModelParameters:
         else:
             return jnp.sqrt(self.var_raw)
 
+    def transform_logpdf(
+        self, logpdf_fn: Callable[[DeviceArray], DeviceArray]
+    ) -> DeviceArray:
+        def _transformed_logpdf(x: DeviceArray) -> DeviceArray:
+            grad_det = jnp.abs(jnp.linalg.det(self.inverse_transform_jac(x)))
+            log_grad_det = jnp.log(grad_det)
+
+            raw_logpdf = logpdf_fn(
+                x=self.inverse_transform(x),
+            )
+            return raw_logpdf + log_grad_det
+
+        return _transformed_logpdf
+
     def __str__(self) -> str:
         def _param_idx_to_str(idx: int) -> str:
             param = self.x[idx]
