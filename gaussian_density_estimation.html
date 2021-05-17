@@ -334,7 +334,7 @@ MAP Posterior Prob = -4455.420834696258
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">samples</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">samples</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">cmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">LATENT_STD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True parameters&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">LATENT_MEAN</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
@@ -347,42 +347,14 @@ MAP Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/gaussian_density_estimation_6_0.png" src="_images/gaussian_density_estimation_6_0.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">importance_samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;importance&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">importance_samples</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">importance_samples</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">cmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">LATENT_STD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True parameters&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">LATENT_MEAN</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Latent Mean&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Latent Std&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Method = simple,	 Perf = -4459.114075145038
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/gaussian_density_estimation_7_0.png" src="_images/gaussian_density_estimation_7_0.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">samples</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">evaluate_samples</span><span class="p">(</span><span class="n">importance_samples</span><span class="p">))</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Method = importance,	 Perf = -4459.118794510243
+**Best Method = simple**
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.114075145038
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-4459.125001005647
-</pre></div>
-</div>
+<img alt="_images/gaussian_density_estimation_6_2.png" src="_images/gaussian_density_estimation_6_2.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -400,7 +372,7 @@ MAP Posterior Prob = -4455.420834696258
 <span class="n">y_pdf</span> <span class="o">=</span> <span class="n">get_pdf</span><span class="p">(</span><span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
 <span class="n">y_pdf_samples</span> <span class="o">=</span> <span class="n">gaussian_density_estimator</span><span class="o">.</span><span class="n">sample_params_map</span><span class="p">(</span>
-    <span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">get_pdf</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,),</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span>
+    <span class="n">prng_key</span> <span class="o">=</span> <span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">get_pdf</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 <span class="n">y_pdf_low</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pdf_samples</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">y_pdf_upp</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pdf_samples</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -415,7 +387,14 @@ MAP Posterior Prob = -4455.420834696258
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/gaussian_density_estimation_9_0.png" src="_images/gaussian_density_estimation_9_0.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Method = simple,	 Perf = -4459.04141604972
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Method = importance,	 Perf = -4459.056578949637
+**Best Method = simple**
+</pre></div>
+</div>
+<img alt="_images/gaussian_density_estimation_7_2.png" src="_images/gaussian_density_estimation_7_2.png" />
 </div>
 </div>
 </div>

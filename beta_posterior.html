@@ -219,13 +219,11 @@
   <a class="reference internal nav-link" href="#one-dimension-beta-distribution">
    1.1. One Dimension Beta Distribution
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#two-dimensional-normal-gamma">
-     1.1.1. Two Dimensional: Normal / Gamma
-    </a>
-   </li>
-  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#two-dimensional-normal-gamma">
+   1.2. Two Dimensional: Normal / Gamma
+  </a>
  </li>
 </ul>
 
@@ -324,7 +322,7 @@ MAP Posterior Prob = 1.030747930559878
 
 <span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
 
-<span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;True PDF&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y_approx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Laplac Approx&quot;</span><span class="p">)</span>
@@ -370,8 +368,9 @@ MAP Posterior Prob = 1.030747930559878
 </div>
 </div>
 </div>
+</div>
 <div class="section" id="two-dimensional-normal-gamma">
-<h3><span class="section-number">1.1.1. </span>Two Dimensional: Normal / Gamma<a class="headerlink" href="#two-dimensional-normal-gamma" title="Permalink to this headline">¶</a></h3>
+<h2><span class="section-number">1.2. </span>Two Dimensional: Normal / Gamma<a class="headerlink" href="#two-dimensional-normal-gamma" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_MU</span> <span class="o">=</span> <span class="mf">2.0</span>
@@ -441,7 +440,7 @@ MAP Posterior Prob = -2.5518149190767656
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100000</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -504,7 +503,6 @@ WARNING:matplotlib.legend:No handles with labels found to put in legend.
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.014126322603956076
 </pre></div>
-</div>
 </div>
 </div>
 </div>
