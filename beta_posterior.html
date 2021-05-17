@@ -336,7 +336,7 @@ MAP Posterior Prob = 1.030747930559878
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">importance_samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;gaussian_importance&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">importance_samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;importance&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True PDF&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">importance_samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Importance-Laplace Approx Samples&quot;</span><span class="p">)</span>
@@ -357,10 +357,10 @@ MAP Posterior Prob = 1.030747930559878
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.03177239677738586
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.028725638395464936
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.010597685119911437
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.010597685119911326
 </pre></div>
 </div>
 </div>
@@ -463,7 +463,7 @@ WARNING:matplotlib.legend:No handles with labels found to put in legend.
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">importance_samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;gaussian_importance&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">importance_samples</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_params</span><span class="p">(</span><span class="n">prng_key</span><span class="o">=</span><span class="n">_seed</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;importance&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -495,10 +495,10 @@ WARNING:matplotlib.legend:No handles with labels found to put in legend.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.050527350598673415
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.02558080042161759
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.014126322603956076
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.014126322603956964
 </pre></div>
 </div>
 </div>

@@ -17,59 +17,39 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-print(gaussian_density_estimator.evaluate_samples(samples))
-print(gaussian_density_estimator.evaluate_samples(importance_samples))
-
+SEED, _seed = random.split(SEED,2)
+samples = gaussian_density_estimator.sample_params(prng_key = _seed, n_samples = 10000, method="laplace")
+plt.hist2d(samples[:,0], samples[:,1], bins=(30,30), cmin=1)
+plt.axhline(LATENT_STD, color="r", label="True parameters")
+plt.axvline(LATENT_MEAN, color="r")
+plt.xlabel("Latent Mean")
+plt.ylabel("Latent Std")
+plt.colorbar()
+plt.legend()
+plt.show()
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mLinAlgError[0m                               Traceback (most recent call last)
-[0;32m<ipython-input-8-d6d2a4752ce1>[0m in [0;36m<module>[0;34m[0m
-[1;32m      1[0m [0mprint[0m[0;34m([0m[0mgaussian_density_estimator[0m[0;34m.[0m[0mevaluate_samples[0m[0;34m([0m[0msamples[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m----> 2[0;31m [0mprint[0m[0;34m([0m[0mgaussian_density_estimator[0m[0;34m.[0m[0mevaluate_samples[0m[0;34m([0m[0mimportance_samples[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;31mKeyError[0m                                  Traceback (most recent call last)
+[0;32m<ipython-input-6-6518275a524e>[0m in [0;36m<module>[0;34m[0m
+[1;32m      1[0m [0mSEED[0m[0;34m,[0m [0m_seed[0m [0;34m=[0m [0mrandom[0m[0;34m.[0m[0msplit[0m[0;34m([0m[0mSEED[0m[0;34m,[0m[0;36m2[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 2[0;31m [0msamples[0m [0;34m=[0m [0mgaussian_density_estimator[0m[0;34m.[0m[0msample_params[0m[0;34m([0m[0mprng_key[0m [0;34m=[0m [0m_seed[0m[0;34m,[0m [0mn_samples[0m [0;34m=[0m [0;36m10000[0m[0;34m,[0m [0mmethod[0m[0;34m=[0m[0;34m"laplace"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      3[0m [0mplt[0m[0;34m.[0m[0mhist2d[0m[0;34m([0m[0msamples[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m[0;36m0[0m[0;34m][0m[0;34m,[0m [0msamples[0m[0;34m[[0m[0;34m:[0m[0;34m,[0m[0;36m1[0m[0;34m][0m[0;34m,[0m [0mbins[0m[0;34m=[0m[0;34m([0m[0;36m30[0m[0;34m,[0m[0;36m30[0m[0;34m)[0m[0;34m,[0m [0mcmin[0m[0;34m=[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      4[0m [0mplt[0m[0;34m.[0m[0maxhline[0m[0;34m([0m[0mLATENT_STD[0m[0;34m,[0m [0mcolor[0m[0;34m=[0m[0;34m"r"[0m[0;34m,[0m [0mlabel[0m[0;34m=[0m[0;34m"True parameters"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m [0mplt[0m[0;34m.[0m[0maxvline[0m[0;34m([0m[0mLATENT_MEAN[0m[0;34m,[0m [0mcolor[0m[0;34m=[0m[0;34m"r"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/work/melvin/melvin/src/melvin/laplace.py[0m in [0;36msample_params[0;34m(self, prng_key, n_samples, method)[0m
+[1;32m    180[0m             [0;32mreturn[0m [0;34m-[0m[0;36m1[0m [0;34m*[0m [0mobjective_vmap[0m[0;34m([0m[0mparams[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    181[0m [0;34m[0m[0m
+[0;32m--> 182[0;31m         [0msampler_cls[0m [0;34m=[0m [0msamplers[0m[0;34m.[0m[0mget[0m[0;34m([0m[0mmethod[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    183[0m         sampler = sampler_cls(
+[1;32m    184[0m             [0mparams[0m[0;34m=[0m[0mself[0m[0;34m.[0m[0mparams[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/work/melvin/melvin/src/melvin/object_tagger.py[0m in [0;36mget[0;34m(self, object_name)[0m
+[1;32m     14[0m [0;34m[0m[0m
+[1;32m     15[0m     [0;32mdef[0m [0mget[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mobject_name[0m[0;34m:[0m [0mstr[0m[0;34m)[0m [0;34m->[0m [0mAny[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 16[0;31m         [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_objects[0m[0;34m[[0m[0mobject_name[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
 [0m
-[0;32m~/work/melvin/melvin/src/melvin/laplace.py[0m in [0;36mevaluate_samples[0;34m(self, samples)[0m
-[1;32m    264[0m         [0mlog_posterior_samples[0m [0;34m=[0m [0;34m-[0m[0;36m1[0m [0;34m*[0m [0mobjective_func_map[0m[0;34m([0m[0msamples[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    265[0m         [0maverage_log_posterior[0m [0;34m=[0m [0mjnp[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0mlog_posterior_samples[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 266[0;31m         [0mentropy_estimate[0m [0;34m=[0m [0msample_entropy_estimate[0m[0;34m([0m[0msamples[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    267[0m [0;34m[0m[0m
-[1;32m    268[0m         [0;32mreturn[0m [0maverage_log_posterior[0m [0;34m+[0m [0mentropy_estimate[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m~/work/melvin/melvin/src/melvin/laplace.py[0m in [0;36msample_entropy_estimate[0;34m(x)[0m
-[1;32m     34[0m         [0mest_samples[0m [0;34m=[0m [0mx[0m[0;34m[[0m[0mn_samples[0m [0;34m//[0m [0;36m2[0m [0;34m:[0m[0;34m,[0m [0;34m:[0m[0;34m][0m[0;34m.[0m[0mT[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     35[0m [0;34m[0m[0m
-[0;32m---> 36[0;31m     [0mkde[0m [0;34m=[0m [0mgaussian_kde[0m[0;34m([0m[0mdataset[0m[0;34m=[0m[0mkde_samples[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     37[0m     [0;32mreturn[0m [0mjnp[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m-[0m[0;36m1[0m [0;34m*[0m [0mjnp[0m[0;34m.[0m[0mlog[0m[0;34m([0m[0mkde[0m[0;34m([0m[0mest_samples[0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     38[0m [0;34m[0m[0m
-
-[0;32m/opt/hostedtoolcache/Python/3.9.5/x64/lib/python3.9/site-packages/scipy/stats/kde.py[0m in [0;36m__init__[0;34m(self, dataset, bw_method, weights)[0m
-[1;32m    204[0m             [0mself[0m[0;34m.[0m[0m_neff[0m [0;34m=[0m [0;36m1[0m[0;34m/[0m[0msum[0m[0;34m([0m[0mself[0m[0;34m.[0m[0m_weights[0m[0;34m**[0m[0;36m2[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    205[0m [0;34m[0m[0m
-[0;32m--> 206[0;31m         [0mself[0m[0;34m.[0m[0mset_bandwidth[0m[0;34m([0m[0mbw_method[0m[0;34m=[0m[0mbw_method[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    207[0m [0;34m[0m[0m
-[1;32m    208[0m     [0;32mdef[0m [0mevaluate[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mpoints[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/opt/hostedtoolcache/Python/3.9.5/x64/lib/python3.9/site-packages/scipy/stats/kde.py[0m in [0;36mset_bandwidth[0;34m(self, bw_method)[0m
-[1;32m    554[0m             [0;32mraise[0m [0mValueError[0m[0;34m([0m[0mmsg[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    555[0m [0;34m[0m[0m
-[0;32m--> 556[0;31m         [0mself[0m[0;34m.[0m[0m_compute_covariance[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    557[0m [0;34m[0m[0m
-[1;32m    558[0m     [0;32mdef[0m [0m_compute_covariance[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/opt/hostedtoolcache/Python/3.9.5/x64/lib/python3.9/site-packages/scipy/stats/kde.py[0m in [0;36m_compute_covariance[0;34m(self)[0m
-[1;32m    566[0m                                                [0mbias[0m[0;34m=[0m[0;32mFalse[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    567[0m                                                aweights=self.weights))
-[0;32m--> 568[0;31m             [0mself[0m[0;34m.[0m[0m_data_inv_cov[0m [0;34m=[0m [0mlinalg[0m[0;34m.[0m[0minv[0m[0;34m([0m[0mself[0m[0;34m.[0m[0m_data_covariance[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    569[0m [0;34m[0m[0m
-[1;32m    570[0m         [0mself[0m[0;34m.[0m[0mcovariance[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_data_covariance[0m [0;34m*[0m [0mself[0m[0;34m.[0m[0mfactor[0m[0;34m**[0m[0;36m2[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/opt/hostedtoolcache/Python/3.9.5/x64/lib/python3.9/site-packages/scipy/linalg/basic.py[0m in [0;36minv[0;34m(a, overwrite_a, check_finite)[0m
-[1;32m    961[0m         [0minv_a[0m[0;34m,[0m [0minfo[0m [0;34m=[0m [0mgetri[0m[0;34m([0m[0mlu[0m[0;34m,[0m [0mpiv[0m[0;34m,[0m [0mlwork[0m[0;34m=[0m[0mlwork[0m[0;34m,[0m [0moverwrite_lu[0m[0;34m=[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    962[0m     [0;32mif[0m [0minfo[0m [0;34m>[0m [0;36m0[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 963[0;31m         [0;32mraise[0m [0mLinAlgError[0m[0;34m([0m[0;34m"singular matrix"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    964[0m     [0;32mif[0m [0minfo[0m [0;34m<[0m [0;36m0[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    965[0m         raise ValueError('illegal value in %d-th argument of internal '
-
-[0;31mLinAlgError[0m: singular matrix
-LinAlgError: singular matrix
+[0;31mKeyError[0m: 'laplace'
+KeyError: 'laplace'
 
