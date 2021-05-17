@@ -55,25 +55,43 @@ class ImportanceSampler(SimpleSampler):
         )
         return raw_params_logpdf + log_grad_det
 
+    def _get_raw_importance_weights(self, samples: DeviceArray) -> DeviceArray:
+        true_log_prob = self._true_log_prob_fn(samples).reshape(-1)
+        laplace_logpdf_vec = jax.vmap(self._laplace_logpdf)
+        base_log_prob = laplace_logpdf_vec(samples).reshape(-1)
+
+        weights = jnp.exp(
+            true_log_prob
+            - base_log_prob
+            - jnp.mean(true_log_prob)
+            + jnp.mean(base_log_prob)
+        )
+        return weights
+
+    def _truncate_importance_weights(self, weights: DeviceArray) -> DeviceArray:
+        weights /= jnp.mean(weights)
+        max_weight = 1.0 / jnp.sqrt(len(weights))
+        truncated_weights = jnp.minimum(weights, max_weight)
+        return truncated_weights
+
+    def _resample(
+        self, prng_key: DeviceArray, samples: DeviceArray, weights: DeviceArray
+    ) -> DeviceArray:
+        idx = jnp.arange(len(weights))
+        rand_idx = random.choice(key=prng_key, a=idx, shape=idx.shape, p=weights)
+
+        return samples[rand_idx, :]
+
     def __call__(self, prng_key: DeviceArray, n_samples: int) -> DeviceArray:
         prng_key_1, prng_key_2 = random.split(prng_key)
 
         simple_samples = super().__call__(prng_key=prng_key_1, n_samples=n_samples)
 
-        true_log_prob = self._true_log_prob_fn(simple_samples).reshape(-1)
+        weights = self._get_raw_importance_weights(simple_samples)
+        truncated_weights = self._truncate_importance_weights(weights)
 
-        laplace_logpdf_vec = jax.vmap(self._laplace_logpdf)
-        base_log_prob = laplace_logpdf_vec(simple_samples).reshape(-1)
-
-        weights = jnp.exp(true_log_prob - base_log_prob)
-        weights /= jnp.sum(weights)
-
-        max_weight = 1.0 / jnp.sqrt(len(weights))
-        truncated_weights = jnp.minimum(weights, max_weight)
-
-        idx = jnp.arange(len(truncated_weights))
-        rand_idx = random.choice(
-            key=prng_key_2, a=idx, shape=idx.shape, p=truncated_weights
+        importance_samples = self._resample(
+            prng_key=prng_key_2, samples=simple_samples, weights=truncated_weights
         )
 
-        return simple_samples[rand_idx, :]
+        return importance_samples
