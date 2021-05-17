@@ -319,7 +319,7 @@ MAP Posterior Prob = 1.030747930559878
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">ALPHA</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">BETA</span><span class="p">)</span>
 
-<span class="n">laplace_logpdf_vec</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_laplace_logpdf</span><span class="p">)</span>
+<span class="n">laplace_logpdf_vec</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">laplace_log_posterior</span><span class="p">)</span>
 <span class="n">y_approx</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">laplace_logpdf_vec</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
 <span class="n">SEED</span><span class="p">,</span> <span class="n">_seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
@@ -365,7 +365,7 @@ MAP Posterior Prob = 1.030747930559878
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.028725638395464936
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.016996090774653805
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.010597685119911437
 </pre></div>
 </div>
 </div>
@@ -499,10 +499,10 @@ WARNING:matplotlib.legend:No handles with labels found to put in legend.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.02558080042161759
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.025580800421618033
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.02915861325187663
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.014126322603956076
 </pre></div>
 </div>
 </div>
