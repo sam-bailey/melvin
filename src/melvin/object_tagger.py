@@ -14,3 +14,9 @@ class ObjectTagger:
 
     def get(self, object_name: str) -> Any:
         return self._objects[object_name]
+
+    def __iter__(self):
+        return iter(self._objects.items())
+
+    def __str__(self):
+        return str(list(self._objects.keys()))

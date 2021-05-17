@@ -165,7 +165,8 @@ class LaplaceApproximation:
         self,
         prng_key: DeviceArray,
         n_samples: int,
-        method: str = "simple",
+        method: str = "auto",
+        verbose: bool = False,
     ) -> DeviceArray:
 
         objective_vmap = jax.vmap(self._objective_from_params)
@@ -173,14 +174,40 @@ class LaplaceApproximation:
         def _true_log_prob_fn(params: DeviceArray) -> DeviceArray:
             return -1 * objective_vmap(params)
 
-        sampler_cls = samplers.get(method)
-        sampler = sampler_cls(
-            params=self.params,
-            base_distribution=self._base_distribution,
-            true_log_prob_fn=_true_log_prob_fn,
-        )
+        if method == "auto":
+            best_perf = -1 * jnp.inf
+            for sampler_name, sampler_cls in samplers:
+                sampler = sampler_cls(
+                    params=self.params,
+                    base_distribution=self._base_distribution,
+                    true_log_prob_fn=_true_log_prob_fn,
+                )
+                samples = sampler(prng_key=prng_key, n_samples=n_samples)
+                perf = self.evaluate_samples(samples)
 
-        return sampler(prng_key=prng_key, n_samples=n_samples)
+                if verbose:
+                    print(f"Method = {sampler_name},\t Perf = {perf}")
+
+                if perf > best_perf:
+                    best_perf = perf
+                    best_method = sampler_name
+                    final_samples = samples
+
+            if verbose:
+                print(f"**Best Method = {best_method}**")
+
+        else:
+            if verbose:
+                print(f"Using method = {method}")
+            sampler_cls = samplers.get(method)
+            sampler = sampler_cls(
+                params=self.params,
+                base_distribution=self._base_distribution,
+                true_log_prob_fn=_true_log_prob_fn,
+            )
+            final_samples = sampler(prng_key=prng_key, n_samples=n_samples)
+
+        return final_samples
 
     def sample_params_map(
         self,
@@ -188,10 +215,11 @@ class LaplaceApproximation:
         n_samples: int,
         func: Callable[[DeviceArray, Any], DeviceArray],
         args: Tuple,
-        method: str = "simple",
+        method: str = "auto",
+        verbose: bool = True,
     ) -> DeviceArray:
         params_rvs = self.sample_params(
-            prng_key=prng_key, n_samples=n_samples, method=method
+            prng_key=prng_key, n_samples=n_samples, method=method, verbose=verbose
         )
 
         n_args = len(args)
@@ -209,10 +237,11 @@ class LaplaceApproximation:
         X: DeviceArray,
         prng_key: DeviceArray,
         n_samples: int,
-        method: str = "simple",
+        method: str = "auto",
+        verbose: bool = True,
     ) -> DeviceArray:
         params_rvs = self.sample_params(
-            prng_key=prng_key, n_samples=n_samples, method=method
+            prng_key=prng_key, n_samples=n_samples, method=method, verbose=verbose
         )
 
         model_func_map = jax.vmap(self.model, (0, None))  # Map over the params, not X
@@ -224,9 +253,12 @@ class LaplaceApproximation:
         return -1 * self._objective(self.params.raw).item()
 
     def evaluate_samples(self, samples: DeviceArray) -> Tuple[float, float]:
-        objective_func_map = jax.vmap(self._objective_from_params)
-        log_posterior_samples = -1 * objective_func_map(samples)
-        average_log_posterior = jnp.mean(log_posterior_samples)
-        entropy_estimate = sample_entropy_estimate(samples)
+        try:
+            objective_func_map = jax.vmap(self._objective_from_params)
+            log_posterior_samples = -1 * objective_func_map(samples)
+            average_log_posterior = jnp.mean(log_posterior_samples)
+            entropy_estimate = sample_entropy_estimate(samples)
 
-        return average_log_posterior + entropy_estimate
+            return average_log_posterior + entropy_estimate
+        except ValueError:
+            return -1 * jnp.inf
